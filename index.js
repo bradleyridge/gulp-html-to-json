@@ -11,7 +11,7 @@ module.exports = () => {
         if (file.isStream()) return cb(new PluginError('[docx-html-converter]: ', 'Stream is not supported'));
         
         // get file
-        var htmlInput = fs.readFileSync(file.path, 'utf8') + '</html>';
+        var htmlInput = file.contents + '</html>';
             
 
         var wrapperObject = {
@@ -23,7 +23,6 @@ module.exports = () => {
         getContent(htmlInput, wrapperObject);
 
         var jsonOutput = JSON.stringify(wrapperObject);
-        console.log(jsonOutput + "");
         
         file.contents = new Buffer(jsonOutput);
         file.path = replaceExt(file.path, '.json');
@@ -38,7 +37,6 @@ function getChild(input){
     //get the opening tag
     var openingTagEndingIndex = input.indexOf('>');
     var openingTag = input.substring(1, openingTagEndingIndex);
-    console.log('{' + openingTag + '}');
     
     //get the closing tag from the opening tag
     var closingTag = openingTag;
@@ -62,9 +60,7 @@ function getChild(input){
     
     //consume the child's content
     var childContentSize = getContentSize(child.content, 0);
-    console.log("closing " + child.closingTag);
     input = input.substring(childContentSize);
-    //console.log(input);
          
     //return the child
     return child;
@@ -82,10 +78,7 @@ function getContent(input, parent){
         
         //if it is a closing tag
         if (input.charAt(1) == '/'){
-            //return because it will only get a closing tag if the parent element is closing
-            if (typeof parent.content[parent.content.length - 1] === 'string'){
-                console.log(parent.content[parent.content.length - 1]);
-            }
+
             return;
         } 
         
@@ -102,7 +95,6 @@ function getContent(input, parent){
             //consume the child
 //TODO - get child size
             input = input.substring(childSize);
-            //console.log("----" + input);
         }
     } 
     
